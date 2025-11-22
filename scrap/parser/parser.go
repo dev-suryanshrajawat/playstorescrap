@@ -405,28 +405,27 @@ func ScrapePlayStoreByURL(url string) (*App, error) {
 
 	var compatibility string
 
-	chromedp.Run(ctx, chromedp.Evaluate(`(function(){
-
-    // Extract compatibility from JSON-LD metadata
+chromedp.Run(ctx, chromedp.Evaluate(`(() => {
     try {
-        let json = document.querySelector('script[type="application/ld+json"]');
-        if (json) {
-            let data = JSON.parse(json.innerText);
-            if (data.operatingSystem) {
-                return data.operatingSystem.trim();
-            }
+        const el = document.querySelector('script[type="application/ld+json"]');
+        if (!el) return "";
+
+        const json = JSON.parse(el.textContent || el.innerText || "{}");
+        if (json.operatingSystem) {
+            return json.operatingSystem.trim();
         }
-    } catch(e){}
 
-    return ""; // fallback
+    } catch (e) {}
 
+    return "";
 })()`, &compatibility))
 
-	if compatibility != "" {
-		app.Compatibility = compatibility
-	} else {
-		app.Compatibility = "N.A"
-	}
+if compatibility != "" {
+    app.Compatibility = compatibility
+} else {
+    app.Compatibility = "N.A"
+}
+
 
 	// Additional installs fallback (regex search)
 	if app.Installs == "" {
@@ -613,3 +612,4 @@ func populateFromJSONLDMap(m map[string]interface{}, app *App) {
 		}
 	}
 }
+
