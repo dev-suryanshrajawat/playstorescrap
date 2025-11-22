@@ -27,11 +27,11 @@ func FetchPlayStoreHTML(pkg string) (*goquery.Document, error) {
 		// page title visible = base page loaded
 		chromedp.WaitVisible(`h1 span`, chromedp.ByQuery),
 
-		// ⭐ WAIT UNTIL RATING BLOCK ACTUALLY LOADS
+		//WAIT UNTIL RATING BLOCK ACTUALLY LOADS
 		chromedp.WaitVisible(`div[aria-label*="stars"]`, chromedp.ByQuery),
 
 		// additional safety wait
-		chromedp.Sleep(1*time.Second),
+		chromedp.Sleep(1*time.Millisecond),
 
 		// capture full rendered DOM
 		chromedp.OuterHTML("html", &html, chromedp.ByQuery),
